@@ -4,7 +4,7 @@
 #
 Name     : hdf5
 Version  : 1.8.17
-Release  : 1
+Release  : 2
 URL      : http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.17.tar
 Source0  : http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.17.tar
 Summary  : No detailed summary available

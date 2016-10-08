@@ -4,7 +4,7 @@
 #
 Name     : hdf5
 Version  : 1.8.17
-Release  : 2
+Release  : 3
 URL      : http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.17.tar
 Source0  : http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.17.tar
 Summary  : No detailed summary available
@@ -65,10 +65,16 @@ lib components for the hdf5 package.
 %setup -q -n hdf5-1.8.17
 
 %build
-%configure --disable-static
+export LANG=C
+export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
+export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
+export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
+export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
+%configure --disable-static --enable-cxx --enable-fortran
 make V=1  %{?_smp_mflags}
 
 %check
+export LANG=C
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost
@@ -86,11 +92,13 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 /usr/bin/gif2h5
 /usr/bin/h52gif
+/usr/bin/h5c++
 /usr/bin/h5cc
 /usr/bin/h5copy
 /usr/bin/h5debug
 /usr/bin/h5diff
 /usr/bin/h5dump
+/usr/bin/h5fc
 /usr/bin/h5import
 /usr/bin/h5jam
 /usr/bin/h5ls
@@ -105,6 +113,23 @@ rm -rf %{buildroot}
 %files data
 %defattr(-,root,root,-)
 /usr/share/hdf5_examples/README
+/usr/share/hdf5_examples/c++/chunks.cpp
+/usr/share/hdf5_examples/c++/compound.cpp
+/usr/share/hdf5_examples/c++/create.cpp
+/usr/share/hdf5_examples/c++/extend_ds.cpp
+/usr/share/hdf5_examples/c++/h5group.cpp
+/usr/share/hdf5_examples/c++/h5tutr_cmprss.cpp
+/usr/share/hdf5_examples/c++/h5tutr_crtatt.cpp
+/usr/share/hdf5_examples/c++/h5tutr_crtdat.cpp
+/usr/share/hdf5_examples/c++/h5tutr_crtgrp.cpp
+/usr/share/hdf5_examples/c++/h5tutr_crtgrpar.cpp
+/usr/share/hdf5_examples/c++/h5tutr_crtgrpd.cpp
+/usr/share/hdf5_examples/c++/h5tutr_extend.cpp
+/usr/share/hdf5_examples/c++/h5tutr_rdwt.cpp
+/usr/share/hdf5_examples/c++/h5tutr_subset.cpp
+/usr/share/hdf5_examples/c++/readdata.cpp
+/usr/share/hdf5_examples/c++/run-c++-ex.sh
+/usr/share/hdf5_examples/c++/writedata.cpp
 /usr/share/hdf5_examples/c/h5_attribute.c
 /usr/share/hdf5_examples/c/h5_chunk_read.c
 /usr/share/hdf5_examples/c/h5_cmprss.c
@@ -131,6 +156,25 @@ rm -rf %{buildroot}
 /usr/share/hdf5_examples/c/h5_write.c
 /usr/share/hdf5_examples/c/ph5example.c
 /usr/share/hdf5_examples/c/run-c-ex.sh
+/usr/share/hdf5_examples/fortran/compound.f90
+/usr/share/hdf5_examples/fortran/h5_cmprss.f90
+/usr/share/hdf5_examples/fortran/h5_crtatt.f90
+/usr/share/hdf5_examples/fortran/h5_crtdat.f90
+/usr/share/hdf5_examples/fortran/h5_crtgrp.f90
+/usr/share/hdf5_examples/fortran/h5_crtgrpar.f90
+/usr/share/hdf5_examples/fortran/h5_crtgrpd.f90
+/usr/share/hdf5_examples/fortran/h5_extend.f90
+/usr/share/hdf5_examples/fortran/h5_rdwt.f90
+/usr/share/hdf5_examples/fortran/h5_subset.f90
+/usr/share/hdf5_examples/fortran/hyperslab.f90
+/usr/share/hdf5_examples/fortran/mountexample.f90
+/usr/share/hdf5_examples/fortran/ph5example.f90
+/usr/share/hdf5_examples/fortran/refobjexample.f90
+/usr/share/hdf5_examples/fortran/refregexample.f90
+/usr/share/hdf5_examples/fortran/run-fortran-ex.sh
+/usr/share/hdf5_examples/fortran/selectele.f90
+/usr/share/hdf5_examples/hl/c++/ptExampleFL.cpp
+/usr/share/hdf5_examples/hl/c++/run-hlc++-ex.sh
 /usr/share/hdf5_examples/hl/c/ex_ds1.c
 /usr/share/hdf5_examples/hl/c/ex_image1.c
 /usr/share/hdf5_examples/hl/c/ex_image2.c
@@ -154,12 +198,48 @@ rm -rf %{buildroot}
 /usr/share/hdf5_examples/hl/c/pal_rgb.h
 /usr/share/hdf5_examples/hl/c/ptExampleFL.c
 /usr/share/hdf5_examples/hl/c/run-hlc-ex.sh
+/usr/share/hdf5_examples/hl/fortran/ex_ds1.f90
+/usr/share/hdf5_examples/hl/fortran/exlite.f90
+/usr/share/hdf5_examples/hl/fortran/run-hlfortran-ex.sh
 /usr/share/hdf5_examples/hl/run-hl-ex.sh
 /usr/share/hdf5_examples/run-all-ex.sh
 
 %files dev
 %defattr(-,root,root,-)
 /usr/include/*.h
+/usr/include/h5_dble_interface.mod
+/usr/include/h5a.mod
+/usr/include/h5a_provisional.mod
+/usr/include/h5d.mod
+/usr/include/h5d_provisional.mod
+/usr/include/h5ds.mod
+/usr/include/h5e.mod
+/usr/include/h5e_provisional.mod
+/usr/include/h5f.mod
+/usr/include/h5f_provisional.mod
+/usr/include/h5fortran_types.mod
+/usr/include/h5g.mod
+/usr/include/h5global.mod
+/usr/include/h5i.mod
+/usr/include/h5im.mod
+/usr/include/h5l.mod
+/usr/include/h5l_provisional.mod
+/usr/include/h5lib.mod
+/usr/include/h5lib_provisional.mod
+/usr/include/h5lt.mod
+/usr/include/h5o.mod
+/usr/include/h5o_provisional.mod
+/usr/include/h5p.mod
+/usr/include/h5p_provisional.mod
+/usr/include/h5r.mod
+/usr/include/h5r_provisional.mod
+/usr/include/h5s.mod
+/usr/include/h5t.mod
+/usr/include/h5t_provisional.mod
+/usr/include/h5tb.mod
+/usr/include/h5test_kind_storage_size_mod.mod
+/usr/include/h5z.mod
+/usr/include/hdf5.mod
 /usr/lib64/*.so
 
 %files lib

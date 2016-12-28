@@ -4,12 +4,12 @@
 #
 Name     : hdf5
 Version  : 1.8.18
-Release  : 4
+Release  : 5
 URL      : https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-1.8.18.tar.gz
 Source0  : https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-1.8.18.tar.gz
 Summary  : HDF5 is a unique technology suite that makes possible the management of extremely large and complex data collections.
 Group    : Development/Tools
-License  : BSD-4-Clause-UC BSD-style
+License  : BSD-4-Clause-UC
 Requires: hdf5-bin
 Requires: hdf5-lib
 Requires: hdf5-data
@@ -62,7 +62,7 @@ lib components for the hdf5 package.
 
 %build
 export LANG=C
-export SOURCE_DATE_EPOCH=1482947480
+export SOURCE_DATE_EPOCH=1482948895
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "

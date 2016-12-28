@@ -1,5 +1,5 @@
 PKG_NAME := hdf5
-URL := http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.17.tar
-ARCHIVES :=
+URL := https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-1.8.18.tar.gz
+
 
 include ../common/Makefile.common

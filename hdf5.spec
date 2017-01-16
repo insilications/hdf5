@@ -4,7 +4,7 @@
 #
 Name     : hdf5
 Version  : 1.8.18
-Release  : 5
+Release  : 6
 URL      : https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-1.8.18.tar.gz
 Source0  : https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-1.8.18.tar.gz
 Summary  : HDF5 is a unique technology suite that makes possible the management of extremely large and complex data collections.
@@ -62,7 +62,7 @@ lib components for the hdf5 package.
 
 %build
 export LANG=C
-export SOURCE_DATE_EPOCH=1482948895
+export SOURCE_DATE_EPOCH=1484528317
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
@@ -78,6 +78,7 @@ export no_proxy=localhost
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
+export SOURCE_DATE_EPOCH=1484528317
 rm -rf %{buildroot}
 %make_install
 

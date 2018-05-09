@@ -4,7 +4,7 @@
 #
 Name     : hdf5
 Version  : 1.8.20
-Release  : 10
+Release  : 11
 URL      : https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-1.8.20.tar.gz
 Source0  : https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-1.8.20.tar.gz
 Summary  : HDF5 is a unique technology suite that makes possible the management of extremely large and complex data collections.

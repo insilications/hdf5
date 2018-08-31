@@ -4,7 +4,7 @@
 #
 Name     : hdf5
 Version  : 1.10.3
-Release  : 13
+Release  : 14
 URL      : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.3/src/hdf5-1.10.3.tar.gz
 Source0  : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.3/src/hdf5-1.10.3.tar.gz
 Summary  : HDF5 (Hierarchical Data Format 5) Software Library
@@ -83,7 +83,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1535754341
+export SOURCE_DATE_EPOCH=1535757053
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
@@ -99,7 +99,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1535754341
+export SOURCE_DATE_EPOCH=1535757053
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/doc/hdf5
 cp COPYING_LBNL_HDF5 %{buildroot}/usr/share/doc/hdf5/COPYING_LBNL_HDF5

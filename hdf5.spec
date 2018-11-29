@@ -4,7 +4,7 @@
 #
 Name     : hdf5
 Version  : 1.10.4
-Release  : 15
+Release  : 16
 URL      : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.4/src/hdf5-1.10.4.tar.gz
 Source0  : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.4/src/hdf5-1.10.4.tar.gz
 Summary  : HDF5 (Hierarchical Data Format 5) Software Library

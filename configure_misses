@@ -6,7 +6,7 @@ Configure miss: config generic-linux-gnu
 Configure miss: config x86_64-linux-gnu
 Configure miss: config x86_64-linux-gnu
 Configure miss: config x86_64-generic
-Configure miss: config ./config/site-specific/host-prodigy
+Configure miss: config ./config/site-specific/host-arjan-box
 Configure miss: if unsupported combinations of configure options are allowed
 Configure miss: dummy main to link with Fortran libraries
 Configure miss: if g++ needs old style header files in includes
@@ -32,7 +32,6 @@ Configure miss: enable developer warnings
 Configure miss: profiling
 Configure miss: internal debug output
 Configure miss: whether function stack tracking is enabled
-Configure miss: whether metadata trace file code is enabled
 Configure miss: API tracing
 Configure miss: whether a memory checking tool will be used
 Configure miss: whether internal memory allocation sanity checking is used
@@ -40,7 +39,7 @@ Configure miss: if the direct I/O virtual file driver (VFD) is enabled
 Configure miss: if the machine has window style path name
 Configure miss: if using special algorithm to convert long double to (unsigned) long values
 Configure miss: if using special algorithm to convert (unsigned) long to long double values
-Configure miss: if correctly converting long double to (unsigned) long long values
-Configure miss: if correctly converting (unsigned) long long to long double values
+Configure miss: if the system is IBM ppc64le and cannot correctly convert some long double values
 Configure miss: additional programs should be built
 Configure miss: whether to perform strict file format checks
+Configure miss: if alignment restrictions are strictly enforced

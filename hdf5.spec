@@ -4,12 +4,12 @@
 #
 Name     : hdf5
 Version  : 1.10.5
-Release  : 17
+Release  : 18
 URL      : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.5/src/hdf5-1.10.5.tar.gz
 Source0  : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.5/src/hdf5-1.10.5.tar.gz
-Summary  : General purpose library and file format for storing scientific data
+Summary  : HDF5 (Hierarchical Data Format 5) Software Library
 Group    : Development/Tools
-License  : BSD-3-Clause BSD-3-Clause-LBNL
+License  : BSD-3-Clause
 Requires: hdf5-bin = %{version}-%{release}
 Requires: hdf5-data = %{version}-%{release}
 Requires: hdf5-lib = %{version}-%{release}
@@ -17,18 +17,14 @@ Requires: hdf5-license = %{version}-%{release}
 BuildRequires : buildreq-cmake
 BuildRequires : gfortran
 BuildRequires : zlib-dev
+Patch1: deflate_limit.h5repack_layout.patch
 
 %description
-This tar file contains
-build-unix.sh       script to build HDF5 with CMake on unix machines
-build-unix-hpc.sh   script to build HDF5 with CMake on unix machines and run
-tests with batch scripts (sbatch).
-CTestScript.cmake
-HDF5config.cmake    CMake scripts for building HDF5
-HDF5options.cmake
-hdf5-1.10.5-pre1    HDF5 1.10.5-pre1 source
-SZip.tar.gz         source for building SZIP
-ZLib.tar.gz         source for building ZLIB
+===================================
+===================================
+This directory contains Fortran APIs for HDF5 Library functionality.
+A complete list of implemented Fortran subroutines can be found in the HDF5
+Reference Manual.
 
 %package bin
 Summary: bin components for the hdf5 package.
@@ -81,33 +77,35 @@ license components for the hdf5 package.
 
 %prep
 %setup -q -n hdf5-1.10.5
+%patch1 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1551542416
-export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
-export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
-export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
-export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1571065960
+export GCC_IGNORE_WERROR=1
+export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-lto -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-lto -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-lto -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -fno-lto -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 %configure --disable-static --enable-cxx --enable-fortran
 make  %{?_smp_mflags}
 
 %check
-export LANG=C
+export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-make VERBOSE=1 V=1 %{?_smp_mflags} check || :
+make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1551542416
+export SOURCE_DATE_EPOCH=1571065960
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/hdf5
-cp COPYING %{buildroot}/usr/share/package-licenses/hdf5/COPYING
-cp COPYING_LBNL_HDF5 %{buildroot}/usr/share/package-licenses/hdf5/COPYING_LBNL_HDF5
+cp %{_builddir}/hdf5-1.10.5/COPYING %{buildroot}/usr/share/package-licenses/hdf5/0d84254ea9ee65dbfaa85ae4077484b75000e9cd
+cp %{_builddir}/hdf5-1.10.5/COPYING_LBNL_HDF5 %{buildroot}/usr/share/package-licenses/hdf5/23794875a8eb26c3462e10c18277015c7a951529
 %make_install
 
 %files
@@ -247,7 +245,86 @@ cp COPYING_LBNL_HDF5 %{buildroot}/usr/share/package-licenses/hdf5/COPYING_LBNL_H
 
 %files dev
 %defattr(-,root,root,-)
-/usr/include/*.h
+/usr/include/H5ACpublic.h
+/usr/include/H5AbstractDs.h
+/usr/include/H5Apublic.h
+/usr/include/H5ArrayType.h
+/usr/include/H5AtomType.h
+/usr/include/H5Attribute.h
+/usr/include/H5Classes.h
+/usr/include/H5CommonFG.h
+/usr/include/H5CompType.h
+/usr/include/H5Cpp.h
+/usr/include/H5CppDoc.h
+/usr/include/H5Cpublic.h
+/usr/include/H5DOpublic.h
+/usr/include/H5DSpublic.h
+/usr/include/H5DaccProp.h
+/usr/include/H5DataSet.h
+/usr/include/H5DataSpace.h
+/usr/include/H5DataType.h
+/usr/include/H5DcreatProp.h
+/usr/include/H5Dpublic.h
+/usr/include/H5DxferProp.h
+/usr/include/H5EnumType.h
+/usr/include/H5Epubgen.h
+/usr/include/H5Epublic.h
+/usr/include/H5Exception.h
+/usr/include/H5FDcore.h
+/usr/include/H5FDdirect.h
+/usr/include/H5FDfamily.h
+/usr/include/H5FDlog.h
+/usr/include/H5FDmpi.h
+/usr/include/H5FDmpio.h
+/usr/include/H5FDmulti.h
+/usr/include/H5FDpublic.h
+/usr/include/H5FDsec2.h
+/usr/include/H5FDstdio.h
+/usr/include/H5FDwindows.h
+/usr/include/H5FaccProp.h
+/usr/include/H5FcreatProp.h
+/usr/include/H5File.h
+/usr/include/H5FloatType.h
+/usr/include/H5Fpublic.h
+/usr/include/H5Gpublic.h
+/usr/include/H5Group.h
+/usr/include/H5IMpublic.h
+/usr/include/H5IdComponent.h
+/usr/include/H5Include.h
+/usr/include/H5IntType.h
+/usr/include/H5Ipublic.h
+/usr/include/H5LDpublic.h
+/usr/include/H5LTpublic.h
+/usr/include/H5LaccProp.h
+/usr/include/H5LcreatProp.h
+/usr/include/H5Library.h
+/usr/include/H5Location.h
+/usr/include/H5Lpublic.h
+/usr/include/H5MMpublic.h
+/usr/include/H5Object.h
+/usr/include/H5OcreatProp.h
+/usr/include/H5Opublic.h
+/usr/include/H5PLextern.h
+/usr/include/H5PLpublic.h
+/usr/include/H5PTpublic.h
+/usr/include/H5PacketTable.h
+/usr/include/H5Ppublic.h
+/usr/include/H5PredType.h
+/usr/include/H5PropList.h
+/usr/include/H5Rpublic.h
+/usr/include/H5Spublic.h
+/usr/include/H5StrType.h
+/usr/include/H5TBpublic.h
+/usr/include/H5Tpublic.h
+/usr/include/H5VarLenType.h
+/usr/include/H5Zpublic.h
+/usr/include/H5api_adpt.h
+/usr/include/H5f90i.h
+/usr/include/H5f90i_gen.h
+/usr/include/H5overflow.h
+/usr/include/H5pubconf.h
+/usr/include/H5public.h
+/usr/include/H5version.h
 /usr/include/h5_gen.mod
 /usr/include/h5a.mod
 /usr/include/h5d.mod
@@ -272,7 +349,9 @@ cp COPYING_LBNL_HDF5 %{buildroot}/usr/share/package-licenses/hdf5/COPYING_LBNL_H
 /usr/include/h5tb.mod
 /usr/include/h5tb_const.mod
 /usr/include/h5z.mod
+/usr/include/hdf5.h
 /usr/include/hdf5.mod
+/usr/include/hdf5_hl.h
 /usr/lib64/libhdf5.so
 /usr/lib64/libhdf5_cpp.so
 /usr/lib64/libhdf5_fortran.so
@@ -298,5 +377,5 @@ cp COPYING_LBNL_HDF5 %{buildroot}/usr/share/package-licenses/hdf5/COPYING_LBNL_H
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/hdf5/COPYING
-/usr/share/package-licenses/hdf5/COPYING_LBNL_HDF5
+/usr/share/package-licenses/hdf5/0d84254ea9ee65dbfaa85ae4077484b75000e9cd
+/usr/share/package-licenses/hdf5/23794875a8eb26c3462e10c18277015c7a951529

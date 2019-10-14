@@ -6,7 +6,7 @@ Configure miss: config generic-linux-gnu
 Configure miss: config x86_64-linux-gnu
 Configure miss: config x86_64-linux-gnu
 Configure miss: config x86_64-generic
-Configure miss: config ./config/site-specific/host-arjan-box
+Configure miss: config ./config/site-specific/host-clr-supermicro
 Configure miss: if unsupported combinations of configure options are allowed
 Configure miss: dummy main to link with Fortran libraries
 Configure miss: if g++ needs old style header files in includes

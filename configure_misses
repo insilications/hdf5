@@ -6,7 +6,7 @@ Configure miss: config generic-linux-gnu
 Configure miss: config x86_64-linux-gnu
 Configure miss: config x86_64-linux-gnu
 Configure miss: config x86_64-generic
-Configure miss: config ./config/site-specific/host-clr-supermicro
+Configure miss: config ./config/site-specific/host-078d57d8c1244d71a691c742d8c3a722
 Configure miss: if unsupported combinations of configure options are allowed
 Configure miss: dummy main to link with Fortran libraries
 Configure miss: if g++ needs old style header files in includes
@@ -36,6 +36,7 @@ Configure miss: API tracing
 Configure miss: whether a memory checking tool will be used
 Configure miss: whether internal memory allocation sanity checking is used
 Configure miss: if the direct I/O virtual file driver (VFD) is enabled
+Configure miss: if the Read-Only S3 virtual file driver (VFD) is enabled
 Configure miss: if the machine has window style path name
 Configure miss: if using special algorithm to convert long double to (unsigned) long values
 Configure miss: if using special algorithm to convert (unsigned) long to long double values

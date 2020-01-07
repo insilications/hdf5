@@ -218,16 +218,23 @@ libhdf5.so.103:H5CX_get_bkgr_buf
 libhdf5.so.103:H5CX_get_bkgr_buf_type
 libhdf5.so.103:H5CX_get_btree_split_ratios
 libhdf5.so.103:H5CX_get_data_transform
+libhdf5.so.103:H5CX_get_dset_min_ohdr_flag
 libhdf5.so.103:H5CX_get_dt_conv_cb
 libhdf5.so.103:H5CX_get_dxpl
+libhdf5.so.103:H5CX_get_encoding
 libhdf5.so.103:H5CX_get_err_detect
+libhdf5.so.103:H5CX_get_ext_file_prefix
 libhdf5.so.103:H5CX_get_filter_cb
+libhdf5.so.103:H5CX_get_intermediate_group
 libhdf5.so.103:H5CX_get_lapl
+libhdf5.so.103:H5CX_get_libver_bounds
 libhdf5.so.103:H5CX_get_max_temp_buf
 libhdf5.so.103:H5CX_get_nlinks
+libhdf5.so.103:H5CX_get_ohdr_flags
 libhdf5.so.103:H5CX_get_ring
 libhdf5.so.103:H5CX_get_tag
 libhdf5.so.103:H5CX_get_tconv_buf
+libhdf5.so.103:H5CX_get_vds_prefix
 libhdf5.so.103:H5CX_get_vec_size
 libhdf5.so.103:H5CX_get_vlen_alloc_info
 libhdf5.so.103:H5CX_is_def_dxpl
@@ -235,8 +242,11 @@ libhdf5.so.103:H5CX_pop
 libhdf5.so.103:H5CX_push
 libhdf5.so.103:H5CX_push_special
 libhdf5.so.103:H5CX_set_apl
+libhdf5.so.103:H5CX_set_dcpl
 libhdf5.so.103:H5CX_set_dxpl
 libhdf5.so.103:H5CX_set_lapl
+libhdf5.so.103:H5CX_set_lcpl
+libhdf5.so.103:H5CX_set_libver_bounds
 libhdf5.so.103:H5CX_set_loc
 libhdf5.so.103:H5CX_set_nlinks
 libhdf5.so.103:H5CX_set_ring
@@ -356,6 +366,7 @@ libhdf5.so.103:H5D__chunk_direct_write
 libhdf5.so.103:H5D__chunk_dump_index
 libhdf5.so.103:H5D__chunk_file_alloc
 libhdf5.so.103:H5D__chunk_format_convert
+libhdf5.so.103:H5D__chunk_is_data_cached
 libhdf5.so.103:H5D__chunk_is_space_alloc
 libhdf5.so.103:H5D__chunk_lookup
 libhdf5.so.103:H5D__chunk_prune_by_extent
@@ -369,6 +380,7 @@ libhdf5.so.103:H5D__contig_alloc
 libhdf5.so.103:H5D__contig_copy
 libhdf5.so.103:H5D__contig_delete
 libhdf5.so.103:H5D__contig_fill
+libhdf5.so.103:H5D__contig_is_data_cached
 libhdf5.so.103:H5D__contig_is_space_alloc
 libhdf5.so.103:H5D__contig_read
 libhdf5.so.103:H5D__contig_write
@@ -649,6 +661,7 @@ libhdf5.so.103:H5FD_get_fileno
 libhdf5.so.103:H5FD_get_fs_type_map
 libhdf5.so.103:H5FD_get_maxaddr
 libhdf5.so.103:H5FD_get_vfd_handle
+libhdf5.so.103:H5FD_hdfs_init
 libhdf5.so.103:H5FD_locate_signature
 libhdf5.so.103:H5FD_lock
 libhdf5.so.103:H5FD_log_init
@@ -1439,6 +1452,7 @@ libhdf5.so.103:H5O__create_ohdr
 libhdf5.so.103:H5O__dec_rc
 libhdf5.so.103:H5O__delete_mesg
 libhdf5.so.103:H5O__free
+libhdf5.so.103:H5O__fsinfo_set_version
 libhdf5.so.103:H5O__get_info_by_idx
 libhdf5.so.103:H5O__inc_rc
 libhdf5.so.103:H5O__init_package
@@ -1752,6 +1766,7 @@ libhdf5.so.103:H5Pget_external_count
 libhdf5.so.103:H5Pget_family_offset
 libhdf5.so.103:H5Pget_fapl_core
 libhdf5.so.103:H5Pget_fapl_family
+libhdf5.so.103:H5Pget_fapl_hdfs
 libhdf5.so.103:H5Pget_fapl_multi
 libhdf5.so.103:H5Pget_fclose_degree
 libhdf5.so.103:H5Pget_file_image
@@ -1849,6 +1864,7 @@ libhdf5.so.103:H5Pset_external
 libhdf5.so.103:H5Pset_family_offset
 libhdf5.so.103:H5Pset_fapl_core
 libhdf5.so.103:H5Pset_fapl_family
+libhdf5.so.103:H5Pset_fapl_hdfs
 libhdf5.so.103:H5Pset_fapl_log
 libhdf5.so.103:H5Pset_fapl_multi
 libhdf5.so.103:H5Pset_fapl_sec2
@@ -3213,6 +3229,8 @@ libhdf5_cpp.so.103:_ZNK2H517FileCreatPropList8getSizesERmS1_
 libhdf5_cpp.so.103:_ZNK2H517FileCreatPropList8setSizesEmm
 libhdf5_cpp.so.103:_ZNK2H517LinkCreatPropList15getCharEncodingEv
 libhdf5_cpp.so.103:_ZNK2H517LinkCreatPropList15setCharEncodingE10H5T_cset_t
+libhdf5_cpp.so.103:_ZNK2H517LinkCreatPropList26getCreateIntermediateGroupEv
+libhdf5_cpp.so.103:_ZNK2H517LinkCreatPropList26setCreateIntermediateGroupEb
 libhdf5_cpp.so.103:_ZNK2H519DSetMemXferPropList11getEDCCheckEv
 libhdf5_cpp.so.103:_ZNK2H519DSetMemXferPropList11getPreserveEv
 libhdf5_cpp.so.103:_ZNK2H519DSetMemXferPropList11setEDCCheckE9H5Z_EDC_t

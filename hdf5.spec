@@ -4,32 +4,31 @@
 #
 Name     : hdf5
 Version  : 1.10.6
-Release  : 19
+Release  : 20
 URL      : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.6/src/hdf5-1.10.6.tar.gz
 Source0  : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.6/src/hdf5-1.10.6.tar.gz
-Summary  : General purpose library and file format for storing scientific data
+Summary  : HDF5 (Hierarchical Data Format 5) Software Library
 Group    : Development/Tools
-License  : BSD-3-Clause
+License  : BSD-3-Clause NCSA
 Requires: hdf5-bin = %{version}-%{release}
 Requires: hdf5-data = %{version}-%{release}
 Requires: hdf5-lib = %{version}-%{release}
 Requires: hdf5-license = %{version}-%{release}
+Requires: hdf5-openmpi = %{version}-%{release}
 BuildRequires : buildreq-cmake
 BuildRequires : gfortran
+BuildRequires : modules
+BuildRequires : openmpi-dev
+BuildRequires : openssh
 BuildRequires : zlib-dev
 Patch1: deflate_limit.h5repack_layout.patch
 
 %description
-This tar file contains
-build-unix.sh       script to build HDF5 with CMake on unix machines
-build-unix-hpc.sh   script to build HDF5 with CMake on unix machines and run
-tests with batch scripts (sbatch).
-CTestScript.cmake
-HDF5config.cmake    CMake scripts for building HDF5
-HDF5options.cmake
-hdf5-1.10.6         HDF5 1.10.6 source
-SZip.tar.gz         source for building SZIP
-ZLib.tar.gz         source for building ZLIB
+===================================
+===================================
+This directory contains Fortran APIs for HDF5 Library functionality.
+A complete list of implemented Fortran subroutines can be found in the HDF5
+Reference Manual.
 
 %package bin
 Summary: bin components for the hdf5 package.
@@ -55,8 +54,8 @@ Group: Development
 Requires: hdf5-lib = %{version}-%{release}
 Requires: hdf5-bin = %{version}-%{release}
 Requires: hdf5-data = %{version}-%{release}
+Requires: hdf5-openmpi = %{version}-%{release}
 Provides: hdf5-devel = %{version}-%{release}
-Requires: hdf5 = %{version}-%{release}
 Requires: hdf5 = %{version}-%{release}
 
 %description dev
@@ -81,18 +80,28 @@ Group: Default
 license components for the hdf5 package.
 
 
+%package openmpi
+Summary: openmpi components for the hdf5 package.
+Group: Default
+
+%description openmpi
+openmpi components for the hdf5 package.
+
+
 %prep
 %setup -q -n hdf5-1.10.6
 cd %{_builddir}/hdf5-1.10.6
 %patch1 -p1
+pushd ..
+cp -a hdf5-1.10.6 build-openmpi
+popd
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1578356580
-# -Werror is for werrorists
+export SOURCE_DATE_EPOCH=1585245692
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -104,18 +113,45 @@ export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -f
 %configure --disable-static --enable-cxx --enable-fortran
 make  %{?_smp_mflags}
 
+pushd ../build-openmpi/
+. /usr/share/defaults/etc/profile.d/modules.sh
+module load openmpi
+export CFLAGS="$CFLAGS -m64 -march=haswell"
+export CXXFLAGS="$CXXFLAGS -m64 -march=haswell"
+export FCFLAGS="$FCFLAGS -m64 -march=haswell"
+export FFLAGS="$FFLAGS -m64 -march=haswell"
+export LDFLAGS="$LDFLAGS -m64 -march=haswell"
+./configure --program-prefix=  --exec-prefix=$MPI_ROOT \
+--libdir=$MPI_LIB --bindir=$MPI_BIN --sbindir=$MPI_BIN --includedir=$MPI_INCLUDE \
+--datarootdir=$MPI_ROOT/share --mandir=$MPI_MAN -exec-prefix=$MPI_ROOT --sysconfdir=$MPI_SYSCONFIG \
+--build=x86_64-generic-linux-gnu --host=x86_64-generic-linux-gnu --target=x86_64-clr-linux-gnu  \
+--disable-static RUNPARALLEL='mpiexec -x LD_LIBRARY_PATH -n $${NPROCS:=6}' --enable-fortran --enable-parallel --with-szlib
+make  %{?_smp_mflags}
+module unload openmpi
+popd
 %check
 export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
+cd ../build-openmpi;
+module load openmpi
+export OMPI_MCA_rmaps_base_oversubscribe=1
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+module unload openmpi
 
 %install
-export SOURCE_DATE_EPOCH=1578356580
+export SOURCE_DATE_EPOCH=1585245692
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/hdf5
+cp %{_builddir}/hdf5-1.10.6/COPYING %{buildroot}/usr/share/package-licenses/hdf5/8af876aa314b59df653a06d748a7c125c9b73c23
 cp %{_builddir}/hdf5-1.10.6/COPYING_LBNL_HDF5 %{buildroot}/usr/share/package-licenses/hdf5/23794875a8eb26c3462e10c18277015c7a951529
+pushd ../build-openmpi/
+module load openmpi
+%make_install_openmpi
+module unload openmpi
+popd
 %make_install
 
 %files
@@ -371,6 +407,85 @@ cp %{_builddir}/hdf5-1.10.6/COPYING_LBNL_HDF5 %{buildroot}/usr/share/package-lic
 /usr/lib64/libhdf5_hl_cpp.so
 /usr/lib64/libhdf5_hl_fortran.so
 /usr/lib64/libhdf5hl_fortran.so
+/usr/lib64/openmpi/include/H5ACpublic.h
+/usr/lib64/openmpi/include/H5Apublic.h
+/usr/lib64/openmpi/include/H5Cpublic.h
+/usr/lib64/openmpi/include/H5DOpublic.h
+/usr/lib64/openmpi/include/H5DSpublic.h
+/usr/lib64/openmpi/include/H5Dpublic.h
+/usr/lib64/openmpi/include/H5Epubgen.h
+/usr/lib64/openmpi/include/H5Epublic.h
+/usr/lib64/openmpi/include/H5FDcore.h
+/usr/lib64/openmpi/include/H5FDdirect.h
+/usr/lib64/openmpi/include/H5FDfamily.h
+/usr/lib64/openmpi/include/H5FDhdfs.h
+/usr/lib64/openmpi/include/H5FDlog.h
+/usr/lib64/openmpi/include/H5FDmpi.h
+/usr/lib64/openmpi/include/H5FDmpio.h
+/usr/lib64/openmpi/include/H5FDmulti.h
+/usr/lib64/openmpi/include/H5FDpublic.h
+/usr/lib64/openmpi/include/H5FDros3.h
+/usr/lib64/openmpi/include/H5FDsec2.h
+/usr/lib64/openmpi/include/H5FDstdio.h
+/usr/lib64/openmpi/include/H5FDwindows.h
+/usr/lib64/openmpi/include/H5Fpublic.h
+/usr/lib64/openmpi/include/H5Gpublic.h
+/usr/lib64/openmpi/include/H5IMpublic.h
+/usr/lib64/openmpi/include/H5Ipublic.h
+/usr/lib64/openmpi/include/H5LDpublic.h
+/usr/lib64/openmpi/include/H5LTpublic.h
+/usr/lib64/openmpi/include/H5Lpublic.h
+/usr/lib64/openmpi/include/H5MMpublic.h
+/usr/lib64/openmpi/include/H5Opublic.h
+/usr/lib64/openmpi/include/H5PLextern.h
+/usr/lib64/openmpi/include/H5PLpublic.h
+/usr/lib64/openmpi/include/H5PTpublic.h
+/usr/lib64/openmpi/include/H5Ppublic.h
+/usr/lib64/openmpi/include/H5Rpublic.h
+/usr/lib64/openmpi/include/H5Spublic.h
+/usr/lib64/openmpi/include/H5TBpublic.h
+/usr/lib64/openmpi/include/H5Tpublic.h
+/usr/lib64/openmpi/include/H5Zpublic.h
+/usr/lib64/openmpi/include/H5api_adpt.h
+/usr/lib64/openmpi/include/H5f90i.h
+/usr/lib64/openmpi/include/H5f90i_gen.h
+/usr/lib64/openmpi/include/H5overflow.h
+/usr/lib64/openmpi/include/H5pubconf.h
+/usr/lib64/openmpi/include/H5public.h
+/usr/lib64/openmpi/include/H5version.h
+/usr/lib64/openmpi/include/h5_gen.mod
+/usr/lib64/openmpi/include/h5a.mod
+/usr/lib64/openmpi/include/h5d.mod
+/usr/lib64/openmpi/include/h5ds.mod
+/usr/lib64/openmpi/include/h5e.mod
+/usr/lib64/openmpi/include/h5f.mod
+/usr/lib64/openmpi/include/h5fortkit.mod
+/usr/lib64/openmpi/include/h5fortran_types.mod
+/usr/lib64/openmpi/include/h5g.mod
+/usr/lib64/openmpi/include/h5global.mod
+/usr/lib64/openmpi/include/h5i.mod
+/usr/lib64/openmpi/include/h5im.mod
+/usr/lib64/openmpi/include/h5l.mod
+/usr/lib64/openmpi/include/h5lib.mod
+/usr/lib64/openmpi/include/h5lt.mod
+/usr/lib64/openmpi/include/h5lt_const.mod
+/usr/lib64/openmpi/include/h5o.mod
+/usr/lib64/openmpi/include/h5p.mod
+/usr/lib64/openmpi/include/h5r.mod
+/usr/lib64/openmpi/include/h5s.mod
+/usr/lib64/openmpi/include/h5t.mod
+/usr/lib64/openmpi/include/h5tb.mod
+/usr/lib64/openmpi/include/h5tb_const.mod
+/usr/lib64/openmpi/include/h5z.mod
+/usr/lib64/openmpi/include/hdf5.h
+/usr/lib64/openmpi/include/hdf5.mod
+/usr/lib64/openmpi/include/hdf5_hl.h
+/usr/lib64/openmpi/lib/libhdf5.settings
+/usr/lib64/openmpi/lib/libhdf5.so
+/usr/lib64/openmpi/lib/libhdf5_fortran.so
+/usr/lib64/openmpi/lib/libhdf5_hl.so
+/usr/lib64/openmpi/lib/libhdf5_hl_fortran.so
+/usr/lib64/openmpi/lib/libhdf5hl_fortran.so
 
 %files lib
 %defattr(-,root,root,-)
@@ -390,3 +505,122 @@ cp %{_builddir}/hdf5-1.10.6/COPYING_LBNL_HDF5 %{buildroot}/usr/share/package-lic
 %files license
 %defattr(0644,root,root,0755)
 /usr/share/package-licenses/hdf5/23794875a8eb26c3462e10c18277015c7a951529
+/usr/share/package-licenses/hdf5/8af876aa314b59df653a06d748a7c125c9b73c23
+
+%files openmpi
+%defattr(-,root,root,-)
+/usr/lib64/openmpi/bin/gif2h5
+/usr/lib64/openmpi/bin/h52gif
+/usr/lib64/openmpi/bin/h5clear
+/usr/lib64/openmpi/bin/h5copy
+/usr/lib64/openmpi/bin/h5debug
+/usr/lib64/openmpi/bin/h5diff
+/usr/lib64/openmpi/bin/h5dump
+/usr/lib64/openmpi/bin/h5format_convert
+/usr/lib64/openmpi/bin/h5import
+/usr/lib64/openmpi/bin/h5jam
+/usr/lib64/openmpi/bin/h5ls
+/usr/lib64/openmpi/bin/h5mkgrp
+/usr/lib64/openmpi/bin/h5pcc
+/usr/lib64/openmpi/bin/h5perf
+/usr/lib64/openmpi/bin/h5perf_serial
+/usr/lib64/openmpi/bin/h5pfc
+/usr/lib64/openmpi/bin/h5redeploy
+/usr/lib64/openmpi/bin/h5repack
+/usr/lib64/openmpi/bin/h5repart
+/usr/lib64/openmpi/bin/h5stat
+/usr/lib64/openmpi/bin/h5unjam
+/usr/lib64/openmpi/bin/h5watch
+/usr/lib64/openmpi/bin/ph5diff
+/usr/lib64/openmpi/lib/libhdf5.so.103
+/usr/lib64/openmpi/lib/libhdf5.so.103.2.0
+/usr/lib64/openmpi/lib/libhdf5_fortran.so.102
+/usr/lib64/openmpi/lib/libhdf5_fortran.so.102.0.1
+/usr/lib64/openmpi/lib/libhdf5_hl.so.100
+/usr/lib64/openmpi/lib/libhdf5_hl.so.100.1.3
+/usr/lib64/openmpi/lib/libhdf5hl_fortran.so.100
+/usr/lib64/openmpi/lib/libhdf5hl_fortran.so.100.0.5
+/usr/lib64/openmpi/share/hdf5_examples/README
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_attribute.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_chunk_read.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_cmprss.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_compound.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_crtatt.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_crtdat.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_crtgrp.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_crtgrpar.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_crtgrpd.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_drivers.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_elink_unix2win.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_extend.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_extend_write.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_extlink.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_group.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_mount.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_rdwt.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_read.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_ref2reg.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_reference.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_select.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_shared_mesg.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_subset.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-eiger.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-exc.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-exclim.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-percival-unlim-maxmin.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-percival-unlim.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-percival.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-simpleIO.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds.c
+/usr/lib64/openmpi/share/hdf5_examples/c/h5_write.c
+/usr/lib64/openmpi/share/hdf5_examples/c/ph5example.c
+/usr/lib64/openmpi/share/hdf5_examples/c/run-c-ex.sh
+/usr/lib64/openmpi/share/hdf5_examples/fortran/compound.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/compound_complex_fortran2003.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/compound_fortran2003.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_cmprss.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_crtatt.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_crtdat.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_crtgrp.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_crtgrpar.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_crtgrpd.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_extend.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_rdwt.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_subset.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/hyperslab.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/mountexample.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/nested_derived_type.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/ph5example.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/refobjexample.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/refregexample.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/run-fortran-ex.sh
+/usr/lib64/openmpi/share/hdf5_examples/fortran/rwdset_fortran2003.f90
+/usr/lib64/openmpi/share/hdf5_examples/fortran/selectele.f90
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_ds1.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_image1.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_image2.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_lite1.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_lite2.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_lite3.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_01.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_02.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_03.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_04.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_05.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_06.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_07.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_08.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_09.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_10.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_11.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_12.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/image24pixel.txt
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/image8.txt
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/pal_rgb.h
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/ptExampleFL.c
+/usr/lib64/openmpi/share/hdf5_examples/hl/c/run-hlc-ex.sh
+/usr/lib64/openmpi/share/hdf5_examples/hl/fortran/ex_ds1.f90
+/usr/lib64/openmpi/share/hdf5_examples/hl/fortran/exlite.f90
+/usr/lib64/openmpi/share/hdf5_examples/hl/fortran/run-hlfortran-ex.sh
+/usr/lib64/openmpi/share/hdf5_examples/hl/run-hl-ex.sh
+/usr/lib64/openmpi/share/hdf5_examples/run-all-ex.sh

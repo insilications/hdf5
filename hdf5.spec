@@ -4,15 +4,14 @@
 #
 %define keepstatic 1
 Name     : hdf5
-Version  : 1.13.0.rc5
-Release  : 301
-URL      : file:///aot/build/clearlinux/packages/hdf5/hdf5-v1_13_0-rc5.tar.gz
-Source0  : file:///aot/build/clearlinux/packages/hdf5/hdf5-v1_13_0-rc5.tar.gz
+Version  : 1.12.0
+Release  : 305
+URL      : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.0/src/hdf5-1.12.0.tar.bz2
+Source0  : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.0/src/hdf5-1.12.0.tar.bz2
 Summary  : HDF5 (Hierarchical Data Format 5) Software Library
 Group    : Development/Tools
 License  : GPL-2.0
 Requires: hdf5-bin = %{version}-%{release}
-Requires: hdf5-data = %{version}-%{release}
 Requires: hdf5-lib = %{version}-%{release}
 Requires: hdf5-openmpi = %{version}-%{release}
 BuildRequires : automake
@@ -28,6 +27,7 @@ BuildRequires : gcc-libs-math
 BuildRequires : gcc-libstdc++32
 BuildRequires : gcc-libubsan
 BuildRequires : gcc-locale
+BuildRequires : gfortran
 BuildRequires : glibc-dev
 BuildRequires : glibc-staticdev
 BuildRequires : libedit
@@ -41,22 +41,11 @@ BuildRequires : libxml2-staticdev
 BuildRequires : m4
 BuildRequires : modules
 BuildRequires : ncurses-dev
+BuildRequires : openmpi
 BuildRequires : openmpi-dev
 BuildRequires : openssh
 BuildRequires : python3-dev
 BuildRequires : python3-staticdev
-BuildRequires : qtbase
-BuildRequires : qtbase-dev
-BuildRequires : qtdeclarative
-BuildRequires : qtdeclarative-dev
-BuildRequires : qtlocation
-BuildRequires : qtlocation-dev
-BuildRequires : qtsvg
-BuildRequires : qtsvg-dev
-BuildRequires : qtwebchannel
-BuildRequires : qtwebchannel-dev
-BuildRequires : qtwebengine
-BuildRequires : qtwebengine-dev
 BuildRequires : xz-dev
 BuildRequires : xz-staticdev
 BuildRequires : zlib-dev
@@ -76,18 +65,9 @@ Reference Manual.
 %package bin
 Summary: bin components for the hdf5 package.
 Group: Binaries
-Requires: hdf5-data = %{version}-%{release}
 
 %description bin
 bin components for the hdf5 package.
-
-
-%package data
-Summary: data components for the hdf5 package.
-Group: Data
-
-%description data
-data components for the hdf5 package.
 
 
 %package dev
@@ -95,7 +75,6 @@ Summary: dev components for the hdf5 package.
 Group: Development
 Requires: hdf5-lib = %{version}-%{release}
 Requires: hdf5-bin = %{version}-%{release}
-Requires: hdf5-data = %{version}-%{release}
 Requires: hdf5-openmpi = %{version}-%{release}
 Provides: hdf5-devel = %{version}-%{release}
 Requires: hdf5 = %{version}-%{release}
@@ -107,7 +86,6 @@ dev components for the hdf5 package.
 %package lib
 Summary: lib components for the hdf5 package.
 Group: Libraries
-Requires: hdf5-data = %{version}-%{release}
 
 %description lib
 lib components for the hdf5 package.
@@ -131,11 +109,11 @@ staticdev components for the hdf5 package.
 
 
 %prep
-%setup -q -n hdf5
-cd %{_builddir}/hdf5
+%setup -q -n hdf5-1.12.0
+cd %{_builddir}/hdf5-1.12.0
 %patch1 -p1
 pushd ..
-cp -a hdf5 build-openmpi
+cp -a hdf5-1.12.0 build-openmpi
 popd
 
 %build
@@ -144,22 +122,22 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1622337922
+export SOURCE_DATE_EPOCH=1622344234
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
 ## altflags1 content
-export CFLAGS="-g -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -flto=16 -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -Wl,--build-id=sha1"
+export CFLAGS="-g -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fno-lto -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -Wl,--build-id=sha1"
 # -ffat-lto-objects -fno-PIE -fno-PIE -m64 -no-pie -fPIC -Wl,-z,max-page-size=0x1000 -fvisibility=hidden -flto-partition=none
-# gcc: -feliminate-unused-debug-types -flto=16 -Wno-error -Wp,-D_REENTRANT -fno-common -funroll-loops
-export CXXFLAGS="-g -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -flto=16 -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -fvisibility-inlines-hidden -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -Wl,--build-id=sha1"
+# gcc: -feliminate-unused-debug-types -fno-lto -Wno-error -Wp,-D_REENTRANT -fno-common -funroll-loops
+export CXXFLAGS="-g -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fno-lto -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -fvisibility-inlines-hidden -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -Wl,--build-id=sha1"
 #
-export FCFLAGS="-g -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -flto=16 -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -Wl,--build-id=sha1"
-export FFLAGS="-g -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -flto=16 -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -Wl,--build-id=sha1"
-export CFFLAGS="-g -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -flto=16 -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -Wl,--build-id=sha1"
+export FCFLAGS="-g -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fno-lto -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -Wl,--build-id=sha1"
+export FFLAGS="-g -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fno-lto -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -Wl,--build-id=sha1"
+export CFFLAGS="-g -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fno-lto -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -Wl,--build-id=sha1"
 #
-export LDFLAGS="-g -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -flto=16 -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -lpthread -Wl,--build-id=sha1"
+export LDFLAGS="-g -O3 --param=lto-max-streaming-parallelism=16 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fno-lto -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -lpthread -Wl,--build-id=sha1"
 #
 export AR=/usr/bin/gcc-ar
 export RANLIB=/usr/bin/gcc-ranlib
@@ -185,42 +163,36 @@ export CCACHE_BASEDIR=/builddir/build/BUILD
 #export CCACHE_DEBUG=true
 #export CCACHE_NODIRECT=true
 ## altflags1 end
-./autogen.sh
-./configure --build=x86_64-generic-linux-gnu --host=x86_64-generic-linux-gnu --target=x86_64-clr-linux-gnu --program-prefix= --prefix=/usr --exec-prefix=/usr --bindir=/usr/bin --sbindir=/usr/bin --sysconfdir=/etc --datadir=/usr/share --includedir=/usr/include --libdir=/usr/lib64 --libexecdir=/usr/libexec --localstatedir=/var --sharedstatedir=/usr/com --mandir=/usr/share/man --infodir=/usr/share/info --disable-maintainer-mode --enable-cxx --enable-fortran --enable-static --enable-shared --enable-optimization=high --enable-static-exec --enable-build-mode=production --enable-tools --enable-tests=no --disable-tests
+%configure --enable-cxx --enable-fortran --enable-static --enable-shared --enable-optimization=high --enable-static-exec --enable-build-mode=production --enable-tools --enable-tests=no --disable-tests
+## make_prepend content
+#sd "uninstall-examples" "install" $(fd -uu --glob Makefile)
+sd "install-examples" "" $(fd -uu --glob Makefile)
+## make_prepend end
 make  %{?_smp_mflags}    V=1 VERBOSE=1
 
 pushd ../build-openmpi/
 . /usr/share/defaults/etc/profile.d/modules.sh
 module load openmpi
-export CFLAGS="-g -O3 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fno-lto -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -Wl,--build-id=sha1"
-# -ffat-lto-objects -fno-PIE -fno-PIE -m64 -no-pie -fPIC -Wl,-z,max-page-size=0x1000 -fvisibility=hidden -flto-partition=none
-# gcc: -feliminate-unused-debug-types -fno-lto -Wno-error -Wp,-D_REENTRANT -fno-common -funroll-loops
-export CXXFLAGS="-g -O3 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fno-lto -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -fvisibility-inlines-hidden -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -Wl,--build-id=sha1"
-#
-export FCFLAGS="-g -O3 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fno-lto -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -Wl,--build-id=sha1"
-export FFLAGS="-g -O3 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fno-lto -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -Wl,--build-id=sha1"
-export CFFLAGS="-g -O3 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fno-lto -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -Wl,--build-id=sha1"
-#
-export LDFLAGS="-g -O3 -march=native -mtune=native -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -flimit-function-alignment -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -floop-block -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -feliminate-unused-debug-types -fno-lto -fno-plt -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe -ffat-lto-objects -fPIC -Wl,-z,max-page-size=0x1000 -fomit-frame-pointer -pthread -static-libstdc++ -static-libgcc -lpthread -Wl,--build-id=sha1"
-#
-export AR=/usr/bin/gcc-ar
-export RANLIB=/usr/bin/gcc-ranlib
-export NM=/usr/bin/gcc-nm
-#
-export MAKEFLAGS=%{?_smp_mflags}
-#
-%global _lto_cflags 1
-#global _lto_cflags %{nil}
-%global _disable_maintainer_mode 1
-#
-./autogen.sh
-./configure --program-prefix=  --exec-prefix=$MPI_ROOT --libdir=$MPI_LIB --bindir=$MPI_BIN --sbindir=$MPI_BIN --includedir=$MPI_INCLUDE --datarootdir=$MPI_ROOT/share --mandir=$MPI_MAN -exec-prefix=$MPI_ROOT --sysconfdir=$MPI_SYSCONFIG --build=x86_64-generic-linux-gnu --host=x86_64-generic-linux-gnu --target=x86_64-clr-linux-gnu --disable-static RUNPARALLEL='mpiexec -x LD_LIBRARY_PATH -n $${NPROCS:=6}' --enable-fortran --enable-parallel --with-szlib --enable-tests=no --disable-tests
+export CFLAGS="$CFLAGS -m64 -march=native -mtune=native"
+export CXXFLAGS="$CXXFLAGS -m64 -march=native -mtune=native"
+export FCFLAGS="$FCFLAGS -m64 -march=native -mtune=native"
+export FFLAGS="$FFLAGS -m64 -march=native -mtune=native"
+export LDFLAGS="$LDFLAGS -m64 -march=native -mtune=native"
+./configure --program-prefix=  --exec-prefix=$MPI_ROOT \
+--libdir=$MPI_LIB --bindir=$MPI_BIN --sbindir=$MPI_BIN --includedir=$MPI_INCLUDE \
+--datarootdir=$MPI_ROOT/share --mandir=$MPI_MAN -exec-prefix=$MPI_ROOT --sysconfdir=$MPI_SYSCONFIG \
+--build=x86_64-generic-linux-gnu --host=x86_64-generic-linux-gnu --target=x86_64-clr-linux-gnu  \
+RUNPARALLEL='mpiexec -x LD_LIBRARY_PATH -n $${NPROCS:=6}' --enable-fortran --enable-parallel --with-szlib --enable-static --enable-shared --enable-optimization=high --enable-static-exec --enable-build-mode=production --enable-tests=no --disable-tests
+## make_prepend content
+#sd "uninstall-examples" "install" $(fd -uu --glob Makefile)
+sd "install-examples" "" $(fd -uu --glob Makefile)
+## make_prepend end
 make  %{?_smp_mflags}    V=1 VERBOSE=1
 module unload openmpi
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1622337922
+export SOURCE_DATE_EPOCH=1622344234
 rm -rf %{buildroot}
 pushd ../build-openmpi/
 module load openmpi
@@ -246,7 +218,6 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/bin/h5clear
 /usr/bin/h5copy
 /usr/bin/h5debug
-/usr/bin/h5delete
 /usr/bin/h5diff
 /usr/bin/h5dump
 /usr/bin/h5fc
@@ -261,117 +232,6 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/bin/h5stat
 /usr/bin/h5unjam
 /usr/bin/h5watch
-/usr/bin/mirror_server
-/usr/bin/mirror_server_stop
-
-%files data
-%defattr(-,root,root,-)
-/usr/share/hdf5_examples/README
-/usr/share/hdf5_examples/c++/chunks.cpp
-/usr/share/hdf5_examples/c++/compound.cpp
-/usr/share/hdf5_examples/c++/create.cpp
-/usr/share/hdf5_examples/c++/extend_ds.cpp
-/usr/share/hdf5_examples/c++/h5group.cpp
-/usr/share/hdf5_examples/c++/h5tutr_cmprss.cpp
-/usr/share/hdf5_examples/c++/h5tutr_crtatt.cpp
-/usr/share/hdf5_examples/c++/h5tutr_crtdat.cpp
-/usr/share/hdf5_examples/c++/h5tutr_crtgrp.cpp
-/usr/share/hdf5_examples/c++/h5tutr_crtgrpar.cpp
-/usr/share/hdf5_examples/c++/h5tutr_crtgrpd.cpp
-/usr/share/hdf5_examples/c++/h5tutr_extend.cpp
-/usr/share/hdf5_examples/c++/h5tutr_rdwt.cpp
-/usr/share/hdf5_examples/c++/h5tutr_subset.cpp
-/usr/share/hdf5_examples/c++/readdata.cpp
-/usr/share/hdf5_examples/c++/run-c++-ex.sh
-/usr/share/hdf5_examples/c++/writedata.cpp
-/usr/share/hdf5_examples/c/h5_attribute.c
-/usr/share/hdf5_examples/c/h5_chunk_read.c
-/usr/share/hdf5_examples/c/h5_cmprss.c
-/usr/share/hdf5_examples/c/h5_compound.c
-/usr/share/hdf5_examples/c/h5_crtatt.c
-/usr/share/hdf5_examples/c/h5_crtdat.c
-/usr/share/hdf5_examples/c/h5_crtgrp.c
-/usr/share/hdf5_examples/c/h5_crtgrpar.c
-/usr/share/hdf5_examples/c/h5_crtgrpd.c
-/usr/share/hdf5_examples/c/h5_debug_trace.c
-/usr/share/hdf5_examples/c/h5_drivers.c
-/usr/share/hdf5_examples/c/h5_elink_unix2win.c
-/usr/share/hdf5_examples/c/h5_extend.c
-/usr/share/hdf5_examples/c/h5_extend_write.c
-/usr/share/hdf5_examples/c/h5_extlink.c
-/usr/share/hdf5_examples/c/h5_group.c
-/usr/share/hdf5_examples/c/h5_mount.c
-/usr/share/hdf5_examples/c/h5_rdwt.c
-/usr/share/hdf5_examples/c/h5_read.c
-/usr/share/hdf5_examples/c/h5_ref2reg_deprec.c
-/usr/share/hdf5_examples/c/h5_ref_compat.c
-/usr/share/hdf5_examples/c/h5_ref_extern.c
-/usr/share/hdf5_examples/c/h5_reference_deprec.c
-/usr/share/hdf5_examples/c/h5_select.c
-/usr/share/hdf5_examples/c/h5_shared_mesg.c
-/usr/share/hdf5_examples/c/h5_subset.c
-/usr/share/hdf5_examples/c/h5_vds-eiger.c
-/usr/share/hdf5_examples/c/h5_vds-exc.c
-/usr/share/hdf5_examples/c/h5_vds-exclim.c
-/usr/share/hdf5_examples/c/h5_vds-percival-unlim-maxmin.c
-/usr/share/hdf5_examples/c/h5_vds-percival-unlim.c
-/usr/share/hdf5_examples/c/h5_vds-percival.c
-/usr/share/hdf5_examples/c/h5_vds-simpleIO.c
-/usr/share/hdf5_examples/c/h5_vds.c
-/usr/share/hdf5_examples/c/h5_write.c
-/usr/share/hdf5_examples/c/ph5example.c
-/usr/share/hdf5_examples/c/run-c-ex.sh
-/usr/share/hdf5_examples/fortran/compound.f90
-/usr/share/hdf5_examples/fortran/compound_complex_fortran2003.f90
-/usr/share/hdf5_examples/fortran/compound_fortran2003.f90
-/usr/share/hdf5_examples/fortran/h5_cmprss.f90
-/usr/share/hdf5_examples/fortran/h5_crtatt.f90
-/usr/share/hdf5_examples/fortran/h5_crtdat.f90
-/usr/share/hdf5_examples/fortran/h5_crtgrp.f90
-/usr/share/hdf5_examples/fortran/h5_crtgrpar.f90
-/usr/share/hdf5_examples/fortran/h5_crtgrpd.f90
-/usr/share/hdf5_examples/fortran/h5_extend.f90
-/usr/share/hdf5_examples/fortran/h5_rdwt.f90
-/usr/share/hdf5_examples/fortran/h5_subset.f90
-/usr/share/hdf5_examples/fortran/hyperslab.f90
-/usr/share/hdf5_examples/fortran/mountexample.f90
-/usr/share/hdf5_examples/fortran/nested_derived_type.f90
-/usr/share/hdf5_examples/fortran/ph5example.f90
-/usr/share/hdf5_examples/fortran/refobjexample.f90
-/usr/share/hdf5_examples/fortran/refregexample.f90
-/usr/share/hdf5_examples/fortran/run-fortran-ex.sh
-/usr/share/hdf5_examples/fortran/rwdset_fortran2003.f90
-/usr/share/hdf5_examples/fortran/selectele.f90
-/usr/share/hdf5_examples/hl/c++/ptExampleFL.cpp
-/usr/share/hdf5_examples/hl/c++/run-hlc++-ex.sh
-/usr/share/hdf5_examples/hl/c/ex_ds1.c
-/usr/share/hdf5_examples/hl/c/ex_image1.c
-/usr/share/hdf5_examples/hl/c/ex_image2.c
-/usr/share/hdf5_examples/hl/c/ex_lite1.c
-/usr/share/hdf5_examples/hl/c/ex_lite2.c
-/usr/share/hdf5_examples/hl/c/ex_lite3.c
-/usr/share/hdf5_examples/hl/c/ex_table_01.c
-/usr/share/hdf5_examples/hl/c/ex_table_02.c
-/usr/share/hdf5_examples/hl/c/ex_table_03.c
-/usr/share/hdf5_examples/hl/c/ex_table_04.c
-/usr/share/hdf5_examples/hl/c/ex_table_05.c
-/usr/share/hdf5_examples/hl/c/ex_table_06.c
-/usr/share/hdf5_examples/hl/c/ex_table_07.c
-/usr/share/hdf5_examples/hl/c/ex_table_08.c
-/usr/share/hdf5_examples/hl/c/ex_table_09.c
-/usr/share/hdf5_examples/hl/c/ex_table_10.c
-/usr/share/hdf5_examples/hl/c/ex_table_11.c
-/usr/share/hdf5_examples/hl/c/ex_table_12.c
-/usr/share/hdf5_examples/hl/c/image24pixel.txt
-/usr/share/hdf5_examples/hl/c/image8.txt
-/usr/share/hdf5_examples/hl/c/pal_rgb.h
-/usr/share/hdf5_examples/hl/c/ptExampleFL.c
-/usr/share/hdf5_examples/hl/c/run-hlc-ex.sh
-/usr/share/hdf5_examples/hl/fortran/ex_ds1.f90
-/usr/share/hdf5_examples/hl/fortran/exlite.f90
-/usr/share/hdf5_examples/hl/fortran/run-hlfortran-ex.sh
-/usr/share/hdf5_examples/hl/run-hl-ex.sh
-/usr/share/hdf5_examples/run-all-ex.sh
 
 %files dev
 %defattr(-,root,root,-)
@@ -406,14 +266,12 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/include/H5FDfamily.h
 /usr/include/H5FDhdfs.h
 /usr/include/H5FDlog.h
-/usr/include/H5FDmirror.h
 /usr/include/H5FDmpi.h
 /usr/include/H5FDmpio.h
 /usr/include/H5FDmulti.h
 /usr/include/H5FDpublic.h
 /usr/include/H5FDros3.h
 /usr/include/H5FDsec2.h
-/usr/include/H5FDsplitter.h
 /usr/include/H5FDstdio.h
 /usr/include/H5FDwindows.h
 /usr/include/H5FaccProp.h
@@ -451,7 +309,6 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/include/H5Spublic.h
 /usr/include/H5StrType.h
 /usr/include/H5TBpublic.h
-/usr/include/H5TSpublic.h
 /usr/include/H5Tpublic.h
 /usr/include/H5VLconnector.h
 /usr/include/H5VLconnector_passthru.h
@@ -521,14 +378,12 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/lib64/openmpi/include/H5FDfamily.h
 /usr/lib64/openmpi/include/H5FDhdfs.h
 /usr/lib64/openmpi/include/H5FDlog.h
-/usr/lib64/openmpi/include/H5FDmirror.h
 /usr/lib64/openmpi/include/H5FDmpi.h
 /usr/lib64/openmpi/include/H5FDmpio.h
 /usr/lib64/openmpi/include/H5FDmulti.h
 /usr/lib64/openmpi/include/H5FDpublic.h
 /usr/lib64/openmpi/include/H5FDros3.h
 /usr/lib64/openmpi/include/H5FDsec2.h
-/usr/lib64/openmpi/include/H5FDsplitter.h
 /usr/lib64/openmpi/include/H5FDstdio.h
 /usr/lib64/openmpi/include/H5FDwindows.h
 /usr/lib64/openmpi/include/H5Fpublic.h
@@ -548,7 +403,6 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/lib64/openmpi/include/H5Rpublic.h
 /usr/lib64/openmpi/include/H5Spublic.h
 /usr/lib64/openmpi/include/H5TBpublic.h
-/usr/lib64/openmpi/include/H5TSpublic.h
 /usr/lib64/openmpi/include/H5Tpublic.h
 /usr/lib64/openmpi/include/H5VLconnector.h
 /usr/lib64/openmpi/include/H5VLconnector_passthru.h
@@ -600,26 +454,26 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 
 %files lib
 %defattr(-,root,root,-)
-/usr/lib64/haswell/libhdf5.so.1000
-/usr/lib64/haswell/libhdf5.so.1000.0.0
-/usr/lib64/haswell/libhdf5_fortran.so.1000
-/usr/lib64/haswell/libhdf5_fortran.so.1000.0.0
-/usr/lib64/haswell/libhdf5_hl.so.1000
-/usr/lib64/haswell/libhdf5_hl.so.1000.0.0
-/usr/lib64/haswell/libhdf5hl_fortran.so.1000
-/usr/lib64/haswell/libhdf5hl_fortran.so.1000.0.0
-/usr/lib64/libhdf5.so.1000
-/usr/lib64/libhdf5.so.1000.0.0
-/usr/lib64/libhdf5_cpp.so.1000
-/usr/lib64/libhdf5_cpp.so.1000.0.0
-/usr/lib64/libhdf5_fortran.so.1000
-/usr/lib64/libhdf5_fortran.so.1000.0.0
-/usr/lib64/libhdf5_hl.so.1000
-/usr/lib64/libhdf5_hl.so.1000.0.0
-/usr/lib64/libhdf5_hl_cpp.so.1000
-/usr/lib64/libhdf5_hl_cpp.so.1000.0.0
-/usr/lib64/libhdf5hl_fortran.so.1000
-/usr/lib64/libhdf5hl_fortran.so.1000.0.0
+/usr/lib64/haswell/libhdf5.so.200
+/usr/lib64/haswell/libhdf5.so.200.0.0
+/usr/lib64/haswell/libhdf5_fortran.so.200
+/usr/lib64/haswell/libhdf5_fortran.so.200.0.0
+/usr/lib64/haswell/libhdf5_hl.so.200
+/usr/lib64/haswell/libhdf5_hl.so.200.0.0
+/usr/lib64/haswell/libhdf5hl_fortran.so.200
+/usr/lib64/haswell/libhdf5hl_fortran.so.200.0.0
+/usr/lib64/libhdf5.so.200
+/usr/lib64/libhdf5.so.200.0.0
+/usr/lib64/libhdf5_cpp.so.200
+/usr/lib64/libhdf5_cpp.so.200.0.0
+/usr/lib64/libhdf5_fortran.so.200
+/usr/lib64/libhdf5_fortran.so.200.0.0
+/usr/lib64/libhdf5_hl.so.200
+/usr/lib64/libhdf5_hl.so.200.0.0
+/usr/lib64/libhdf5_hl_cpp.so.200
+/usr/lib64/libhdf5_hl_cpp.so.200.0.0
+/usr/lib64/libhdf5hl_fortran.so.200
+/usr/lib64/libhdf5hl_fortran.so.200.0.0
 
 %files openmpi
 %defattr(-,root,root,-)
@@ -628,7 +482,6 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/lib64/openmpi/bin/h5clear
 /usr/lib64/openmpi/bin/h5copy
 /usr/lib64/openmpi/bin/h5debug
-/usr/lib64/openmpi/bin/h5delete
 /usr/lib64/openmpi/bin/h5diff
 /usr/lib64/openmpi/bin/h5dump
 /usr/lib64/openmpi/bin/h5format_convert
@@ -644,104 +497,15 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/lib64/openmpi/bin/h5stat
 /usr/lib64/openmpi/bin/h5unjam
 /usr/lib64/openmpi/bin/h5watch
-/usr/lib64/openmpi/bin/mirror_server
-/usr/lib64/openmpi/bin/mirror_server_stop
 /usr/lib64/openmpi/bin/ph5diff
-/usr/lib64/openmpi/lib/libhdf5.so.1000
-/usr/lib64/openmpi/lib/libhdf5.so.1000.0.0
-/usr/lib64/openmpi/lib/libhdf5_fortran.so.1000
-/usr/lib64/openmpi/lib/libhdf5_fortran.so.1000.0.0
-/usr/lib64/openmpi/lib/libhdf5_hl.so.1000
-/usr/lib64/openmpi/lib/libhdf5_hl.so.1000.0.0
-/usr/lib64/openmpi/lib/libhdf5hl_fortran.so.1000
-/usr/lib64/openmpi/lib/libhdf5hl_fortran.so.1000.0.0
-/usr/lib64/openmpi/share/hdf5_examples/README
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_attribute.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_chunk_read.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_cmprss.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_compound.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_crtatt.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_crtdat.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_crtgrp.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_crtgrpar.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_crtgrpd.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_debug_trace.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_drivers.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_elink_unix2win.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_extend.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_extend_write.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_extlink.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_group.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_mount.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_rdwt.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_read.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_ref2reg_deprec.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_ref_compat.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_ref_extern.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_reference_deprec.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_select.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_shared_mesg.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_subset.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-eiger.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-exc.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-exclim.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-percival-unlim-maxmin.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-percival-unlim.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-percival.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds-simpleIO.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_vds.c
-/usr/lib64/openmpi/share/hdf5_examples/c/h5_write.c
-/usr/lib64/openmpi/share/hdf5_examples/c/ph5example.c
-/usr/lib64/openmpi/share/hdf5_examples/c/run-c-ex.sh
-/usr/lib64/openmpi/share/hdf5_examples/fortran/compound.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/compound_complex_fortran2003.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/compound_fortran2003.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_cmprss.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_crtatt.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_crtdat.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_crtgrp.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_crtgrpar.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_crtgrpd.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_extend.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_rdwt.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/h5_subset.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/hyperslab.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/mountexample.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/nested_derived_type.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/ph5example.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/refobjexample.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/refregexample.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/run-fortran-ex.sh
-/usr/lib64/openmpi/share/hdf5_examples/fortran/rwdset_fortran2003.f90
-/usr/lib64/openmpi/share/hdf5_examples/fortran/selectele.f90
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_ds1.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_image1.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_image2.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_lite1.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_lite2.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_lite3.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_01.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_02.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_03.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_04.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_05.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_06.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_07.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_08.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_09.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_10.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_11.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ex_table_12.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/image24pixel.txt
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/image8.txt
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/pal_rgb.h
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/ptExampleFL.c
-/usr/lib64/openmpi/share/hdf5_examples/hl/c/run-hlc-ex.sh
-/usr/lib64/openmpi/share/hdf5_examples/hl/fortran/ex_ds1.f90
-/usr/lib64/openmpi/share/hdf5_examples/hl/fortran/exlite.f90
-/usr/lib64/openmpi/share/hdf5_examples/hl/fortran/run-hlfortran-ex.sh
-/usr/lib64/openmpi/share/hdf5_examples/hl/run-hl-ex.sh
-/usr/lib64/openmpi/share/hdf5_examples/run-all-ex.sh
+/usr/lib64/openmpi/lib/libhdf5.so.200
+/usr/lib64/openmpi/lib/libhdf5.so.200.0.0
+/usr/lib64/openmpi/lib/libhdf5_fortran.so.200
+/usr/lib64/openmpi/lib/libhdf5_fortran.so.200.0.0
+/usr/lib64/openmpi/lib/libhdf5_hl.so.200
+/usr/lib64/openmpi/lib/libhdf5_hl.so.200.0.0
+/usr/lib64/openmpi/lib/libhdf5hl_fortran.so.200
+/usr/lib64/openmpi/lib/libhdf5hl_fortran.so.200.0.0
 
 %files staticdev
 %defattr(-,root,root,-)
@@ -752,3 +516,8 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/lib64/libhdf5_hl_cpp.a
 /usr/lib64/libhdf5_hl_fortran.a
 /usr/lib64/libhdf5hl_fortran.a
+/usr/lib64/openmpi/lib/libhdf5.a
+/usr/lib64/openmpi/lib/libhdf5_fortran.a
+/usr/lib64/openmpi/lib/libhdf5_hl.a
+/usr/lib64/openmpi/lib/libhdf5_hl_fortran.a
+/usr/lib64/openmpi/lib/libhdf5hl_fortran.a

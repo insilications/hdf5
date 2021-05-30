@@ -1,5 +1,7 @@
 # This file contains additional build requirements that did not get
 # picked up automatically. One name per line, no whitespace.
+automake
+automake-dev
 binutils-dev
 buildreq-cmake
 doxygen
@@ -10,6 +12,7 @@ gcc-libs-math
 gcc-libstdc++32
 gcc-libubsan
 gcc-locale
+gfortran
 glibc-dev
 glibc-staticdev
 libedit
@@ -20,25 +23,15 @@ libgcc1
 libstdc++
 libxml2-dev
 libxml2-staticdev
+m4
+modules
 ncurses-dev
+openmpi
+openmpi-dev
+openssh
 python3-dev
 python3-staticdev
-qtbase
-qtbase-dev
-qtdeclarative
-qtdeclarative-dev
-qtlocation
-qtlocation-dev
-qtsvg
-qtsvg-dev
-qtwebchannel
-qtwebchannel-dev
-qtwebengine
-qtwebengine-dev
 xz-dev
 xz-staticdev
 zlib-dev
 zlib-staticdev
-automake
-automake-dev
-m4

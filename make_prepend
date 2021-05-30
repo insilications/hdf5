@@ -1,0 +1,2 @@
+#sd "uninstall-examples" "install" $(fd -uu --glob Makefile)
+sd "install-examples" "" $(fd -uu --glob Makefile)

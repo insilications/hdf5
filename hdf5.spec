@@ -5,7 +5,7 @@
 %define keepstatic 1
 Name     : hdf5
 Version  : 1.12.1
-Release  : 311
+Release  : 312
 URL      : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.1/src/hdf5-1.12.1.tar.bz2
 Source0  : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.1/src/hdf5-1.12.1.tar.bz2
 Summary  : HDF5 (Hierarchical Data Format 5) Software Library
@@ -13,7 +13,6 @@ Group    : Development/Tools
 License  : GPL-2.0
 Requires: hdf5-bin = %{version}-%{release}
 Requires: hdf5-lib = %{version}-%{release}
-Requires: hdf5-openmpi = %{version}-%{release}
 BuildRequires : automake
 BuildRequires : automake-dev
 BuildRequires : binutils-dev
@@ -74,7 +73,6 @@ Summary: dev components for the hdf5 package.
 Group: Development
 Requires: hdf5-lib = %{version}-%{release}
 Requires: hdf5-bin = %{version}-%{release}
-Requires: hdf5-openmpi = %{version}-%{release}
 Provides: hdf5-devel = %{version}-%{release}
 Requires: hdf5 = %{version}-%{release}
 
@@ -90,14 +88,6 @@ Group: Libraries
 lib components for the hdf5 package.
 
 
-%package openmpi
-Summary: openmpi components for the hdf5 package.
-Group: Default
-
-%description openmpi
-openmpi components for the hdf5 package.
-
-
 %package staticdev
 Summary: staticdev components for the hdf5 package.
 Group: Default
@@ -110,9 +100,6 @@ staticdev components for the hdf5 package.
 %prep
 %setup -q -n hdf5-1.12.1
 cd %{_builddir}/hdf5-1.12.1
-pushd ..
-cp -a hdf5-1.12.1 build-openmpi
-popd
 
 %build
 unset http_proxy
@@ -120,7 +107,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1627511019
+export SOURCE_DATE_EPOCH=1627511843
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -202,35 +189,10 @@ sd "install-examples" "" $(fd -uu --glob Makefile)
 ## make_prepend end
 make  %{?_smp_mflags}    V=1 VERBOSE=1
 
-pushd ../build-openmpi/
-. /usr/share/defaults/etc/profile.d/modules.sh
-module load openmpi
-export CFLAGS="$CFLAGS -m64 -march=native -mtune=native"
-export CXXFLAGS="$CXXFLAGS -m64 -march=native -mtune=native"
-export FCFLAGS="$FCFLAGS -m64 -march=native -mtune=native"
-export FFLAGS="$FFLAGS -m64 -march=native -mtune=native"
-export LDFLAGS="$LDFLAGS -m64 -march=native -mtune=native"
-./configure --program-prefix=  --exec-prefix=$MPI_ROOT \
---libdir=$MPI_LIB --bindir=$MPI_BIN --sbindir=$MPI_BIN --includedir=$MPI_INCLUDE \
---datarootdir=$MPI_ROOT/share --mandir=$MPI_MAN -exec-prefix=$MPI_ROOT --sysconfdir=$MPI_SYSCONFIG \
---build=x86_64-generic-linux-gnu --host=x86_64-generic-linux-gnu --target=x86_64-clr-linux-gnu  \
-RUNPARALLEL='mpiexec -x LD_LIBRARY_PATH -n $${NPROCS:=6}' --enable-fortran --enable-parallel --with-szlib --enable-static --enable-shared --enable-optimization=high --enable-static-exec --enable-build-mode=production --enable-tests=no --disable-tests
-## make_prepend content
-#sd "uninstall-examples" "install" $(fd -uu --glob Makefile)
-sd "install-examples" "" $(fd -uu --glob Makefile)
-## make_prepend end
-make  %{?_smp_mflags}    V=1 VERBOSE=1
-module unload openmpi
-popd
 
 %install
-export SOURCE_DATE_EPOCH=1627511019
+export SOURCE_DATE_EPOCH=1627511843
 rm -rf %{buildroot}
-pushd ../build-openmpi/
-module load openmpi
-%make_install_openmpi
-module unload openmpi
-popd
 %make_install
 ## install_append content
 install -dm 0755 %{buildroot}/usr/lib64/haswell/ || :
@@ -401,92 +363,6 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/lib64/libhdf5_hl_cpp.so
 /usr/lib64/libhdf5_hl_fortran.so
 /usr/lib64/libhdf5hl_fortran.so
-/usr/lib64/openmpi/include/H5ACpublic.h
-/usr/lib64/openmpi/include/H5Apublic.h
-/usr/lib64/openmpi/include/H5Cpublic.h
-/usr/lib64/openmpi/include/H5DOpublic.h
-/usr/lib64/openmpi/include/H5DSpublic.h
-/usr/lib64/openmpi/include/H5Dpublic.h
-/usr/lib64/openmpi/include/H5Epubgen.h
-/usr/lib64/openmpi/include/H5Epublic.h
-/usr/lib64/openmpi/include/H5FDcore.h
-/usr/lib64/openmpi/include/H5FDdirect.h
-/usr/lib64/openmpi/include/H5FDfamily.h
-/usr/lib64/openmpi/include/H5FDhdfs.h
-/usr/lib64/openmpi/include/H5FDlog.h
-/usr/lib64/openmpi/include/H5FDmpi.h
-/usr/lib64/openmpi/include/H5FDmpio.h
-/usr/lib64/openmpi/include/H5FDmulti.h
-/usr/lib64/openmpi/include/H5FDpublic.h
-/usr/lib64/openmpi/include/H5FDros3.h
-/usr/lib64/openmpi/include/H5FDsec2.h
-/usr/lib64/openmpi/include/H5FDstdio.h
-/usr/lib64/openmpi/include/H5Fpublic.h
-/usr/lib64/openmpi/include/H5Gpublic.h
-/usr/lib64/openmpi/include/H5IMpublic.h
-/usr/lib64/openmpi/include/H5Ipublic.h
-/usr/lib64/openmpi/include/H5LTpublic.h
-/usr/lib64/openmpi/include/H5Lpublic.h
-/usr/lib64/openmpi/include/H5MMpublic.h
-/usr/lib64/openmpi/include/H5Opublic.h
-/usr/lib64/openmpi/include/H5PLextern.h
-/usr/lib64/openmpi/include/H5PLpublic.h
-/usr/lib64/openmpi/include/H5PTpublic.h
-/usr/lib64/openmpi/include/H5Ppublic.h
-/usr/lib64/openmpi/include/H5Rpublic.h
-/usr/lib64/openmpi/include/H5Spublic.h
-/usr/lib64/openmpi/include/H5TBpublic.h
-/usr/lib64/openmpi/include/H5Tpublic.h
-/usr/lib64/openmpi/include/H5Zpublic.h
-/usr/lib64/openmpi/include/H5api_adpt.h
-/usr/lib64/openmpi/include/H5f90i.h
-/usr/lib64/openmpi/include/H5f90i_gen.h
-/usr/lib64/openmpi/include/H5overflow.h
-/usr/lib64/openmpi/include/H5pubconf.h
-/usr/lib64/openmpi/include/H5public.h
-/usr/lib64/openmpi/include/H5version.h
-/usr/lib64/openmpi/include/h5_dble_interface.mod
-/usr/lib64/openmpi/include/h5a.mod
-/usr/lib64/openmpi/include/h5a_provisional.mod
-/usr/lib64/openmpi/include/h5d.mod
-/usr/lib64/openmpi/include/h5d_provisional.mod
-/usr/lib64/openmpi/include/h5ds.mod
-/usr/lib64/openmpi/include/h5e.mod
-/usr/lib64/openmpi/include/h5e_provisional.mod
-/usr/lib64/openmpi/include/h5f.mod
-/usr/lib64/openmpi/include/h5f_provisional.mod
-/usr/lib64/openmpi/include/h5fdmpio.mod
-/usr/lib64/openmpi/include/h5fortran_types.mod
-/usr/lib64/openmpi/include/h5g.mod
-/usr/lib64/openmpi/include/h5global.mod
-/usr/lib64/openmpi/include/h5i.mod
-/usr/lib64/openmpi/include/h5im.mod
-/usr/lib64/openmpi/include/h5l.mod
-/usr/lib64/openmpi/include/h5l_provisional.mod
-/usr/lib64/openmpi/include/h5lib.mod
-/usr/lib64/openmpi/include/h5lib_provisional.mod
-/usr/lib64/openmpi/include/h5lt.mod
-/usr/lib64/openmpi/include/h5o.mod
-/usr/lib64/openmpi/include/h5o_provisional.mod
-/usr/lib64/openmpi/include/h5p.mod
-/usr/lib64/openmpi/include/h5p_provisional.mod
-/usr/lib64/openmpi/include/h5r.mod
-/usr/lib64/openmpi/include/h5r_provisional.mod
-/usr/lib64/openmpi/include/h5s.mod
-/usr/lib64/openmpi/include/h5t.mod
-/usr/lib64/openmpi/include/h5t_provisional.mod
-/usr/lib64/openmpi/include/h5tb.mod
-/usr/lib64/openmpi/include/h5test_kind_storage_size_mod.mod
-/usr/lib64/openmpi/include/h5z.mod
-/usr/lib64/openmpi/include/hdf5.h
-/usr/lib64/openmpi/include/hdf5.mod
-/usr/lib64/openmpi/include/hdf5_hl.h
-/usr/lib64/openmpi/lib/libhdf5.settings
-/usr/lib64/openmpi/lib/libhdf5.so
-/usr/lib64/openmpi/lib/libhdf5_fortran.so
-/usr/lib64/openmpi/lib/libhdf5_hl.so
-/usr/lib64/openmpi/lib/libhdf5_hl_fortran.so
-/usr/lib64/openmpi/lib/libhdf5hl_fortran.so
 
 %files lib
 %defattr(-,root,root,-)
@@ -513,35 +389,6 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/lib64/libhdf5hl_fortran.so.200
 /usr/lib64/libhdf5hl_fortran.so.200.0.1
 
-%files openmpi
-%defattr(-,root,root,-)
-/usr/lib64/openmpi/bin/gif2h5
-/usr/lib64/openmpi/bin/h52gif
-/usr/lib64/openmpi/bin/h5copy
-/usr/lib64/openmpi/bin/h5debug
-/usr/lib64/openmpi/bin/h5diff
-/usr/lib64/openmpi/bin/h5dump
-/usr/lib64/openmpi/bin/h5import
-/usr/lib64/openmpi/bin/h5jam
-/usr/lib64/openmpi/bin/h5ls
-/usr/lib64/openmpi/bin/h5mkgrp
-/usr/lib64/openmpi/bin/h5pcc
-/usr/lib64/openmpi/bin/h5pfc
-/usr/lib64/openmpi/bin/h5redeploy
-/usr/lib64/openmpi/bin/h5repack
-/usr/lib64/openmpi/bin/h5repart
-/usr/lib64/openmpi/bin/h5stat
-/usr/lib64/openmpi/bin/h5unjam
-/usr/lib64/openmpi/bin/ph5diff
-/usr/lib64/openmpi/lib/libhdf5.so.10
-/usr/lib64/openmpi/lib/libhdf5.so.10.4.0
-/usr/lib64/openmpi/lib/libhdf5_fortran.so.10
-/usr/lib64/openmpi/lib/libhdf5_fortran.so.10.0.7
-/usr/lib64/openmpi/lib/libhdf5_hl.so.10
-/usr/lib64/openmpi/lib/libhdf5_hl.so.10.2.3
-/usr/lib64/openmpi/lib/libhdf5hl_fortran.so.10
-/usr/lib64/openmpi/lib/libhdf5hl_fortran.so.10.0.6
-
 %files staticdev
 %defattr(-,root,root,-)
 /usr/lib64/libhdf5.a
@@ -551,8 +398,3 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/lib64/libhdf5_hl_cpp.a
 /usr/lib64/libhdf5_hl_fortran.a
 /usr/lib64/libhdf5hl_fortran.a
-/usr/lib64/openmpi/lib/libhdf5.a
-/usr/lib64/openmpi/lib/libhdf5_fortran.a
-/usr/lib64/openmpi/lib/libhdf5_hl.a
-/usr/lib64/openmpi/lib/libhdf5_hl_fortran.a
-/usr/lib64/openmpi/lib/libhdf5hl_fortran.a

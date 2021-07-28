@@ -2,7 +2,6 @@ libc.so.6
 libdl.so.2
 libgfortran.so.5
 libm.so.6
-libmpi.so.40
 libpthread.so.0
 libquadmath.so.0
 libstdc++.so.6

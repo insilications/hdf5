@@ -4,11 +4,11 @@
 #
 %define keepstatic 1
 Name     : hdf5
-Version  : 1.8.22
-Release  : 306
-URL      : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.22/src/hdf5-1.8.22.tar.bz2
-Source0  : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.22/src/hdf5-1.8.22.tar.bz2
-Summary  : HDF5 is a unique technology suite that makes possible the management of extremely large and complex data collections.
+Version  : 1.12.1
+Release  : 311
+URL      : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.1/src/hdf5-1.12.1.tar.bz2
+Source0  : https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.1/src/hdf5-1.12.1.tar.bz2
+Summary  : HDF5 (Hierarchical Data Format 5) Software Library
 Group    : Development/Tools
 License  : GPL-2.0
 Requires: hdf5-bin = %{version}-%{release}
@@ -55,9 +55,11 @@ BuildRequires : zlib-staticdev
 %define debug_package %{nil}
 
 %description
-This distribution contains the HDF5 FORTRAN90 APIs source code (prototype)
-based on the HDF5 1.2.2 release (ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/current),
-tests and examples.
+===================================
+===================================
+This directory contains Fortran APIs for HDF5 Library functionality.
+A complete list of implemented Fortran subroutines can be found in the HDF5
+Reference Manual.
 
 %package bin
 Summary: bin components for the hdf5 package.
@@ -106,10 +108,10 @@ staticdev components for the hdf5 package.
 
 
 %prep
-%setup -q -n hdf5-1.8.22
-cd %{_builddir}/hdf5-1.8.22
+%setup -q -n hdf5-1.12.1
+cd %{_builddir}/hdf5-1.12.1
 pushd ..
-cp -a hdf5-1.8.22 build-openmpi
+cp -a hdf5-1.12.1 build-openmpi
 popd
 
 %build
@@ -118,7 +120,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1627483862
+export SOURCE_DATE_EPOCH=1627511019
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -222,7 +224,7 @@ module unload openmpi
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1627483862
+export SOURCE_DATE_EPOCH=1627511019
 rm -rf %{buildroot}
 pushd ../build-openmpi/
 module load openmpi
@@ -245,11 +247,13 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/bin/h52gif
 /usr/bin/h5c++
 /usr/bin/h5cc
+/usr/bin/h5clear
 /usr/bin/h5copy
 /usr/bin/h5debug
 /usr/bin/h5diff
 /usr/bin/h5dump
 /usr/bin/h5fc
+/usr/bin/h5format_convert
 /usr/bin/h5import
 /usr/bin/h5jam
 /usr/bin/h5ls
@@ -259,12 +263,14 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/bin/h5repart
 /usr/bin/h5stat
 /usr/bin/h5unjam
+/usr/bin/h5watch
+/usr/bin/mirror_server
+/usr/bin/mirror_server_stop
 
 %files dev
 %defattr(-,root,root,-)
 /usr/include/H5ACpublic.h
 /usr/include/H5AbstractDs.h
-/usr/include/H5AcreatProp.h
 /usr/include/H5Apublic.h
 /usr/include/H5ArrayType.h
 /usr/include/H5AtomType.h
@@ -277,12 +283,14 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/include/H5Cpublic.h
 /usr/include/H5DOpublic.h
 /usr/include/H5DSpublic.h
+/usr/include/H5DaccProp.h
 /usr/include/H5DataSet.h
 /usr/include/H5DataSpace.h
 /usr/include/H5DataType.h
 /usr/include/H5DcreatProp.h
 /usr/include/H5Dpublic.h
 /usr/include/H5DxferProp.h
+/usr/include/H5ESpublic.h
 /usr/include/H5EnumType.h
 /usr/include/H5Epubgen.h
 /usr/include/H5Epublic.h
@@ -292,13 +300,16 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/include/H5FDfamily.h
 /usr/include/H5FDhdfs.h
 /usr/include/H5FDlog.h
+/usr/include/H5FDmirror.h
 /usr/include/H5FDmpi.h
 /usr/include/H5FDmpio.h
 /usr/include/H5FDmulti.h
 /usr/include/H5FDpublic.h
 /usr/include/H5FDros3.h
 /usr/include/H5FDsec2.h
+/usr/include/H5FDsplitter.h
 /usr/include/H5FDstdio.h
+/usr/include/H5FDwindows.h
 /usr/include/H5FaccProp.h
 /usr/include/H5FcreatProp.h
 /usr/include/H5File.h
@@ -311,6 +322,7 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/include/H5Include.h
 /usr/include/H5IntType.h
 /usr/include/H5Ipublic.h
+/usr/include/H5LDpublic.h
 /usr/include/H5LTpublic.h
 /usr/include/H5LaccProp.h
 /usr/include/H5LcreatProp.h
@@ -318,6 +330,7 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/include/H5Location.h
 /usr/include/H5Lpublic.h
 /usr/include/H5MMpublic.h
+/usr/include/H5Mpublic.h
 /usr/include/H5Object.h
 /usr/include/H5OcreatProp.h
 /usr/include/H5Opublic.h
@@ -331,9 +344,13 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/include/H5Rpublic.h
 /usr/include/H5Spublic.h
 /usr/include/H5StrType.h
-/usr/include/H5StrcreatProp.h
 /usr/include/H5TBpublic.h
 /usr/include/H5Tpublic.h
+/usr/include/H5VLconnector.h
+/usr/include/H5VLconnector_passthru.h
+/usr/include/H5VLnative.h
+/usr/include/H5VLpassthru.h
+/usr/include/H5VLpublic.h
 /usr/include/H5VarLenType.h
 /usr/include/H5Zpublic.h
 /usr/include/H5api_adpt.h
@@ -343,37 +360,30 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 /usr/include/H5pubconf.h
 /usr/include/H5public.h
 /usr/include/H5version.h
-/usr/include/h5_dble_interface.mod
+/usr/include/h5_gen.mod
 /usr/include/h5a.mod
-/usr/include/h5a_provisional.mod
 /usr/include/h5d.mod
-/usr/include/h5d_provisional.mod
 /usr/include/h5ds.mod
 /usr/include/h5e.mod
-/usr/include/h5e_provisional.mod
 /usr/include/h5f.mod
-/usr/include/h5f_provisional.mod
+/usr/include/h5fortkit.mod
 /usr/include/h5fortran_types.mod
 /usr/include/h5g.mod
 /usr/include/h5global.mod
 /usr/include/h5i.mod
 /usr/include/h5im.mod
 /usr/include/h5l.mod
-/usr/include/h5l_provisional.mod
 /usr/include/h5lib.mod
-/usr/include/h5lib_provisional.mod
 /usr/include/h5lt.mod
+/usr/include/h5lt_const.mod
 /usr/include/h5o.mod
-/usr/include/h5o_provisional.mod
 /usr/include/h5p.mod
-/usr/include/h5p_provisional.mod
 /usr/include/h5r.mod
-/usr/include/h5r_provisional.mod
 /usr/include/h5s.mod
 /usr/include/h5t.mod
-/usr/include/h5t_provisional.mod
 /usr/include/h5tb.mod
-/usr/include/h5test_kind_storage_size_mod.mod
+/usr/include/h5tb_const.mod
+/usr/include/h5vl.mod
 /usr/include/h5z.mod
 /usr/include/hdf5.h
 /usr/include/hdf5.mod
@@ -480,28 +490,28 @@ cp --archive %{buildroot}/usr/lib64/lib*.so* %{buildroot}/usr/lib64/haswell/ || 
 
 %files lib
 %defattr(-,root,root,-)
-/usr/lib64/haswell/libhdf5.so.10
-/usr/lib64/haswell/libhdf5.so.10.4.0
-/usr/lib64/haswell/libhdf5_cpp.so.16
-/usr/lib64/haswell/libhdf5_cpp.so.16.0.1
-/usr/lib64/haswell/libhdf5_fortran.so.10
-/usr/lib64/haswell/libhdf5_fortran.so.10.0.7
-/usr/lib64/haswell/libhdf5_hl.so.10
-/usr/lib64/haswell/libhdf5_hl.so.10.2.3
-/usr/lib64/haswell/libhdf5hl_fortran.so.10
-/usr/lib64/haswell/libhdf5hl_fortran.so.10.0.6
-/usr/lib64/libhdf5.so.10
-/usr/lib64/libhdf5.so.10.4.0
-/usr/lib64/libhdf5_cpp.so.16
-/usr/lib64/libhdf5_cpp.so.16.0.1
-/usr/lib64/libhdf5_fortran.so.10
-/usr/lib64/libhdf5_fortran.so.10.0.7
-/usr/lib64/libhdf5_hl.so.10
-/usr/lib64/libhdf5_hl.so.10.2.3
-/usr/lib64/libhdf5_hl_cpp.so.11
-/usr/lib64/libhdf5_hl_cpp.so.11.1.3
-/usr/lib64/libhdf5hl_fortran.so.10
-/usr/lib64/libhdf5hl_fortran.so.10.0.6
+/usr/lib64/haswell/libhdf5.so.200
+/usr/lib64/haswell/libhdf5.so.200.1.0
+/usr/lib64/haswell/libhdf5_cpp.so.200
+/usr/lib64/haswell/libhdf5_cpp.so.200.1.0
+/usr/lib64/haswell/libhdf5_fortran.so.200
+/usr/lib64/haswell/libhdf5_fortran.so.200.1.0
+/usr/lib64/haswell/libhdf5_hl.so.200
+/usr/lib64/haswell/libhdf5_hl.so.200.0.1
+/usr/lib64/haswell/libhdf5hl_fortran.so.200
+/usr/lib64/haswell/libhdf5hl_fortran.so.200.0.1
+/usr/lib64/libhdf5.so.200
+/usr/lib64/libhdf5.so.200.1.0
+/usr/lib64/libhdf5_cpp.so.200
+/usr/lib64/libhdf5_cpp.so.200.1.0
+/usr/lib64/libhdf5_fortran.so.200
+/usr/lib64/libhdf5_fortran.so.200.1.0
+/usr/lib64/libhdf5_hl.so.200
+/usr/lib64/libhdf5_hl.so.200.0.1
+/usr/lib64/libhdf5_hl_cpp.so.200
+/usr/lib64/libhdf5_hl_cpp.so.200.0.1
+/usr/lib64/libhdf5hl_fortran.so.200
+/usr/lib64/libhdf5hl_fortran.so.200.0.1
 
 %files openmpi
 %defattr(-,root,root,-)
